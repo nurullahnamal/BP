@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using BP.Api.Data.Models;
 using BP.Api.Models;
 
@@ -8,18 +11,34 @@ namespace BP.Api.Service
 {
     public class ContactService : IContactService
     {
-
-        public ContactDVO GetContactById(int Id)
+        private readonly IMapper mapper;
+        private readonly IHttpClientFactory httpClientFactory;
+        public ContactService(IMapper Mapper,IHttpClientFactory  HttpClientFactory)
         {
-            // veritabanından kayıdın getirilmesi   
+            mapper = Mapper;
+            httpClientFactory=HttpClientFactory;
+
+
+        }
+        public  ContactDVO GetContactById(int Id)
+        {
+            // veritabanından kaydın getirilmesi   
 
             Contact dbContact = getDummyContact();
 
-            return new ContactDVO()
-            {
-                Id = dbContact.Id,
-                FullName = $"{dbContact.FirstName} {dbContact.LastName}"
-            };
+            var client = httpClientFactory.CreateClient("garantiapi");
+
+        
+
+
+            //ContactDVO resultContact=new ContactDVO();
+            //mapper.Map(dbContact, resultContact);
+
+            ContactDVO resultContact=mapper.Map<ContactDVO>(dbContact);
+
+            return resultContact;
+
+           
         }
 
         private Contact getDummyContact()

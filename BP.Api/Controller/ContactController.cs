@@ -1,4 +1,5 @@
 ﻿using System;
+using BP.Api.Data.Models;
 using BP.Api.Models;
 using BP.Api.Service;
 using Microsoft.AspNetCore.Http;
@@ -27,10 +28,20 @@ namespace BP.Api.Controller
             return configuration["ReadMe"].ToString();
         }
 
+        [ResponseCache(Duration = 10)]
+
         [HttpGet("{id}")]
         public ContactDVO GetContactById(int id)
         {
             return contactService.GetContactById(id);
+        }
+
+
+        [HttpPost]
+        public ContactDVO CreateContact(ContactDVO Contact)
+        {
+            return Contact;
+         
         }
     }
 }

@@ -9,8 +9,14 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
+using BP.Api.Extensions;
+using BP.Api.Models;
 using BP.Api.Service;
+using BP.Api.Validations;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 
@@ -28,9 +34,21 @@ namespace BP.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddFluentValidation(i => i.RunDefaultMvcValidationAfterFluentValidationExecutes = false);
+
+
+            
             services.AddHealthChecks();
+            services.ConfigureMapping();
             services.AddScoped<IContactService, ContactService>();
+            services.AddTransient<IValidator<ContactDVO>, ContactValidator>();
+            services.AddHttpClient("garantiapi", Config =>
+            {
+                Config.BaseAddress = new Uri("http://www.garanti.com");
+                Config.DefaultRequestHeaders.Add("Authorization", "Bearer 1212121");
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,16 +59,9 @@ namespace BP.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHealthChecks("/api/health",new HealthCheckOptions()
-                {
-                    ResponseWriter = async (context, report) =>
-                    {
-                        await context.Response.WriteAsync("OK");
-                    }
-                }
-            );
 
-
+            app.UseCustomHealthCheck();
+            app.UseResponseCaching();
 
             app.UseHttpsRedirection();
 
