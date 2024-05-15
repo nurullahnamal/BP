@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,11 +28,24 @@ namespace BP.Api
         }
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Debug(Serilog.Events.LogEventLevel.Information)
+                .WriteTo.File("Log.txt")
+                .CreateLogger();
+
             CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .UseSerilog()
+            .ConfigureLogging(i =>
+            {
+                i.ClearProviders();
+                i.SetMinimumLevel(LogLevel.Debug);
+                i.AddDebug();
+
+            })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseConfiguration(Configuration);

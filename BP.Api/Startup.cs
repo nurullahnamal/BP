@@ -20,6 +20,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using BP.Api.BackgroundServices;
+using BP.Api.Logging;
 
 namespace BP.Api
 {
@@ -52,6 +53,17 @@ namespace BP.Api
 
 
             services.AddHostedService<DataTimeLogWriter>();
+            services.AddLogging();
+
+            //services.AddLogging(i =>
+            //{
+            //    i.ClearProviders();
+            //    i.SetMinimumLevel(LogLevel.Information);
+            //    //i.AddDebug();
+            //    i.AddProvider(new MyCustomLoggerFactory());
+
+            //});
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
