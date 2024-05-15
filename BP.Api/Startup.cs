@@ -19,6 +19,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
+using BP.Api.BackgroundServices;
 
 namespace BP.Api
 {
@@ -49,6 +50,8 @@ namespace BP.Api
                 Config.DefaultRequestHeaders.Add("Authorization", "Bearer 1212121");
             });
 
+
+            services.AddHostedService<DataTimeLogWriter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
